@@ -31,6 +31,7 @@ const main = async () => {
   )
 
   if (allApprovedReviewsFromActor.length > 0) {
+    core.info('Pull request is already approved.')
     return
   }
 
@@ -39,6 +40,7 @@ const main = async () => {
     pull_number: number,
     event: 'APPROVE'
   })
+  core.info('Approved the pull request.')
 }
 
 main().catch(err => core.setFailed(err.message))
