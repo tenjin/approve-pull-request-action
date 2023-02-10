@@ -8,6 +8,9 @@ inputs:
   github-token:
     description: 'GitHub Token'
     required: true
+  actor:
+    description: Username of the github-token
+    required: true
   number:
     description: 'Pull Request number'
     required: true

@@ -2279,6 +2279,7 @@ const main = async () => {
   const token = core.getInput('github-token')
   const number = core.getInput('number')
   const repoString = core.getInput('repo')
+  const actor = core.getInput('actor')
 
   let repoObject
   if (repoString) {
@@ -2289,6 +2290,21 @@ const main = async () => {
   }
 
   const octokit = new GitHub(token)
+
+  const reviews = await octokit.pulls.listReviews({
+    ...repoObject,
+    pull_number: number,
+  })
+
+  const allApprovedReviewsFromActor = reviews.data.filter(
+    (review) => {
+      return review.user.login === actor && review.state === 'APPROVED'
+    }
+  )
+
+  if (allApprovedReviewsFromActor.length > 0) {
+    return
+  }
 
   await octokit.pulls.createReview({
     ...repoObject,
