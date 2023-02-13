@@ -24,13 +24,11 @@ const main = async () => {
     pull_number: number,
   })
 
-  const allApprovedReviewsFromActor = reviews.data.filter(
-    (review) => {
-      return review.user.login === actor && review.state === 'APPROVED'
-    }
-  )
+  const allReviewsFromActor = reviews.data.filter((review) => review.user.login === actor)
+  const sorted = allReviewsFromActor.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at))
+  const mostRecent = sorted[0]
 
-  if (allApprovedReviewsFromActor.length > 0) {
+  if (allReviewsFromActor.length > 0 && mostRecent.state === 'APPROVED') {
     core.info('Pull request is already approved.')
     return
   }
