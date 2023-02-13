@@ -2294,14 +2294,15 @@ const main = async () => {
   const reviews = await octokit.pulls.listReviews({
     ...repoObject,
     pull_number: number,
+    per_page: 100,
   })
 
   const allReviewsFromActor = reviews.data.filter((review) => review.user.login === actor)
-  const sorted = allReviewsFromActor.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at))
+  const sorted = allReviewsFromActor.sort((a, b) => new Date(b["submitted_at"]) - new Date(a["submitted_at"]))
   const mostRecent = sorted[0]
 
   if (allReviewsFromActor.length > 0 && mostRecent.state === 'APPROVED') {
-    core.info('Pull request is already approved.')
+    core.info('Pull request is already approved by our most recent review.')
     return
   }
 
