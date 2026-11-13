@@ -18,5 +18,5 @@ inputs:
     description: 'Pull Request repo in owner/repo format'
     required: false
 runs:
-  using: 'node16'
+  using: 'node24'
   main: 'dist/index.js'
