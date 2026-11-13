@@ -1,9 +1,9 @@
 'use strict'
 
 const core = require('@actions/core')
-const { GitHub, context } = require('@actions/github')
 
 const main = async () => {
+  const { getOctokit, context } = await import('@actions/github')
   const token = core.getInput('github-token')
   const number = core.getInput('number')
   const repoString = core.getInput('repo')
@@ -17,16 +17,16 @@ const main = async () => {
     repoObject = context.repo
   }
 
-  const octokit = new GitHub(token)
+  const octokit = getOctokit(token)
 
-  const reviews = await octokit.pulls.listReviews({
+  const reviews = await octokit.rest.pulls.listReviews({
     ...repoObject,
     pull_number: number,
-    per_page: 100,
+    per_page: 100
   })
 
   const allReviewsFromActor = reviews.data.filter((review) => review.user.login === actor)
-  const sorted = allReviewsFromActor.sort((a, b) => new Date(b["submitted_at"]) - new Date(a["submitted_at"]))
+  const sorted = allReviewsFromActor.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at))
   const mostRecent = sorted[0]
 
   if (allReviewsFromActor.length > 0 && mostRecent.state === 'APPROVED') {
@@ -34,7 +34,7 @@ const main = async () => {
     return
   }
 
-  await octokit.pulls.createReview({
+  await octokit.rest.pulls.createReview({
     ...repoObject,
     pull_number: number,
     event: 'APPROVE'
